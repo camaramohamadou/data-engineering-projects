@@ -1,0 +1,29 @@
+steps:
+  # Step to run tests
+  - name: 'python:3.9-slim'
+    entrypoint: 'sh'
+    args: ['-c', 'pip install -r requirements.txt && pytest']
+
+  # Step to build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/myapp', '.']
+
+  # Step to push the image to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/myapp']
+
+  # Deploy to Google Cloud Run (if applicable)
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'myapp'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/myapp'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+images:
+  - 'gcr.io/$PROJECT_ID/myapp'

@@ -1,0 +1,15 @@
+# Use the same base image
+FROM python:3.9-slim
+
+# Set the working directory in the container
+WORKDIR /usr/src/app
+
+# Copy the application code
+COPY . .
+
+# Install production and test dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r test-requirements.txt
+
+# Run tests when the container launches
+CMD ["pytest"]
